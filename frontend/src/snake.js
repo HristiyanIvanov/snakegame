@@ -3,7 +3,7 @@ import { saveToLeaderboard } from "./saveToLeaderboard";
 import { getRandomPosition } from "./utils";
 import { renderApple, renderSnake } from "./render";
 import { displayGameOverMessage } from "./displayMessage";
-import { GRID_SIZE, GRID_WIDTH, GRID_HEIGHT } from "./constans";
+import { GRID_SIZE, GRID_WIDTH, GRID_HEIGHT, SNAKE_SPEED } from "./constans";
 let appleCount = 0;
 let isLevelTwo = false;
 let gameOver = false;
@@ -81,10 +81,11 @@ export function moveSnake(
   } else {
     snake.segments.pop();
   }
+
   gsap.to(snakeContainer.children, {
-    duration: 0.2,
-    x: (i) => snake.segments[i]?.x,
-    y: (i) => snake.segments[i]?.y,
+    duration: 1,
+    x: (i) => snake.segments[i].x,
+    y: (i) => snake.segments[i].y,
     ease: "linear",
     onUpdate: () => {
       snakeContainer.children.forEach((child, index) => {

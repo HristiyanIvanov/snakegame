@@ -6,7 +6,7 @@ import { calcCenter, getRandomPosition } from "./utils";
 import { gsap } from "gsap";
 import { onKeyDown } from "./movement";
 import { moveSnake } from "./snake";
-import { GRID_SIZE, GRID_WIDTH, GRID_HEIGHT } from "./constans";
+import { GRID_SIZE, GRID_WIDTH, GRID_HEIGHT, SNAKE_SPEED } from "./constans";
 
 (async () => {
   const app = new Application();
@@ -101,7 +101,7 @@ import { GRID_SIZE, GRID_WIDTH, GRID_HEIGHT } from "./constans";
         );
 
         gsap.timeline().to(snakeContainer.children, {
-          duration: 0.2,
+          duration: SNAKE_SPEED,
           x: (i) => snake.segments[i]?.x,
           y: (i) => snake.segments[i]?.y,
           ease: "linear",
@@ -111,7 +111,7 @@ import { GRID_SIZE, GRID_WIDTH, GRID_HEIGHT } from "./constans";
         });
 
         if (!isPaused) {
-          gsap.delayedCall(0.2, animateSnake);
+          gsap.delayedCall(SNAKE_SPEED, animateSnake);
         }
       }
       animateSnake();

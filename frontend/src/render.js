@@ -13,7 +13,6 @@ export function renderSnake(
     map[`${child.x}-${child.y}`] = child;
     return map;
   }, {});
-
   container.removeChildren();
 
   snake.segments.forEach((segment, index) => {
@@ -78,7 +77,6 @@ export function renderSnake(
     newTailSprite.alpha = 0;
 
     container.addChild(newTailSprite);
-
     gsap.to(newTailSprite, {
       alpha: 1,
       duration: 0.5,

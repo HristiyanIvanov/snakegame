@@ -20,6 +20,8 @@ const GRID_HEIGHT = 11;
     resolution: window.devicePixelRatio || 1,
     autoDensity: true,
   });
+
+  document.getElementById("snake-container").appendChild(app.canvas);
   initDevtools({ app });
 
   const landingScreen = document.getElementById("landing-screen");
@@ -44,10 +46,10 @@ const GRID_HEIGHT = 11;
     landingScreen.classList.add("hidden");
     gameScreen.classList.remove("hidden");
 
-    document.getElementById("snake-container").appendChild(app.canvas);
     isPaused = false;
     startGame();
   });
+
   const snake = {
     segments: [
       {
@@ -66,7 +68,7 @@ const GRID_HEIGHT = 11;
     direction: "right",
     nextDirection: "right",
   };
-  let gameInterval;
+
   let apple = getRandomPosition(
     snake,
     obstacleSprite,
@@ -97,71 +99,50 @@ const GRID_HEIGHT = 11;
   window.addEventListener("keydown", (e) => onKeyDown(e, snake));
 
   function startGame() {
-    if (!isPaused) {
-      function animateSnake() {
-        snake.direction = snake.nextDirection;
+    if (isPaused) return;
+    function animateSnake() {
+      snake.direction = snake.nextDirection;
 
-        moveSnake(
-          snake,
-          GRID_SIZE,
-          GRID_WIDTH,
-          GRID_HEIGHT,
-          username,
-          obstacleSprite,
-          gameInterval,
-          snakeContainer,
-          textures,
-          apple,
-          setApple,
-          appleSprite,
-          app
-        );
+      moveSnake(
+        snake,
+        GRID_SIZE,
+        GRID_WIDTH,
+        GRID_HEIGHT,
+        username,
+        obstacleSprite,
+        snakeContainer,
+        textures,
+        apple,
+        setApple,
+        appleSprite,
+        app
+      );
 
-        snake.segments.forEach((segment, index) => {
-          const sprite = snakeContainer.children[index];
-          if (sprite) {
-            gsap.to(sprite, {
-              x: segment.x,
-              y: segment.y,
-              duration: 0.2,
-              ease: "linear",
-              onComplete: () => {
-                if (index === snake.segments.length - 1) {
-                  renderSnake(
-                    snakeContainer,
-                    snake,
-                    textures,
-                    GRID_SIZE,
-                    getDirection,
-                    getCornerSprite
-                  );
-                }
-              },
-            });
-          }
-        });
+      gsap.timeline().to(snakeContainer.children, {
+        duration: 0.2,
+        x: (i) => snake.segments[i]?.x,
+        y: (i) => snake.segments[i]?.y,
+        ease: "linear",
+        onComplete: () => {
+          renderSnake(
+            snakeContainer,
+            snake,
+            textures,
+            GRID_SIZE,
+            getDirection,
+            getCornerSprite
+          );
+        },
+      });
 
-        renderSnake(
-          snakeContainer,
-          snake,
-          textures,
-          GRID_SIZE,
-          getDirection,
-          getCornerSprite
-        );
-
-        if (!isPaused) {
-          gsap.delayedCall(0.2, animateSnake);
-        }
-      }
-
-      animateSnake();
+      gsap.delayedCall(0.2, animateSnake);
     }
+
+    animateSnake();
   }
 
   function pauseGame() {
     if (!isPaused) {
-      clearInterval(gameInterval);
       isPaused = true;
     }
   }

@@ -2,7 +2,7 @@ import { gsap } from "gsap";
 import { saveToLeaderboard } from "./saveToLeaderboard";
 import { getCornerSprite, getDirection } from "./movement";
 import { getRandomPosition } from "./utils";
-import { renderSnake, renderApple } from "./render";
+import { renderApple, renderSnake } from "./render";
 import { displayGameOverMessage } from "./displayMessage";
 let appleCount = 0;
 let isLevelTwo = false;
@@ -15,7 +15,6 @@ export function moveSnake(
   GRID_HEIGHT,
   username,
   obstacleSprite,
-  gameInterval,
   snakeContainer,
   textures,
   apple,
@@ -43,7 +42,6 @@ export function moveSnake(
       saveToLeaderboard(username, appleCount);
       gameOver = true;
     }
-    clearInterval(gameInterval);
     return;
   }
 
@@ -57,7 +55,6 @@ export function moveSnake(
       saveToLeaderboard(username, appleCount);
       gameOver = true;
     }
-    clearInterval(gameInterval);
     return;
   }
 
@@ -67,7 +64,6 @@ export function moveSnake(
       saveToLeaderboard(username, appleCount);
       gameOver = true;
     }
-    clearInterval(gameInterval);
     return;
   }
 
@@ -88,18 +84,17 @@ export function moveSnake(
     appleCount++;
     document.getElementById("score").textContent = "Score: " + appleCount;
 
-    if (appleCount === 2 && !isLevelTwo) {
+    if (appleCount === 25 && !isLevelTwo) {
       transitionToLevelTwo(GRID_SIZE, obstacleSprite, app);
     }
   } else {
     snake.segments.pop();
   }
-
-  gsap.to(snakeContainer.children, {
-    duration: 0.9,
+  gsap.timeline().to(snakeContainer.children, {
+    duration: 0.2,
     x: (i) => snake.segments[i]?.x,
     y: (i) => snake.segments[i]?.y,
-    ease: "power1.inOut",
+    ease: "power2.out",
     onUpdate: () => {
       renderSnake(
         snakeContainer,
@@ -125,6 +120,7 @@ async function transitionToLevelTwo(GRID_SIZE, obstacleSprite, app) {
   if (!app.stage.children.includes(obstacleSprite)) {
     app.stage.addChild(obstacleSprite);
   }
+
   gsap.to(obstacleSprite, {
     width: GRID_SIZE,
     height: GRID_SIZE,

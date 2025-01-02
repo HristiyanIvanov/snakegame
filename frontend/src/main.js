@@ -4,12 +4,9 @@ import { loadTextures } from "./textures";
 import { renderSnake, renderApple } from "./render";
 import { calcCenter, getRandomPosition } from "./utils";
 import { gsap } from "gsap";
-import { getCornerSprite, getDirection, onKeyDown } from "./movement";
+import { onKeyDown } from "./movement";
 import { moveSnake } from "./snake";
-
-const GRID_SIZE = 32;
-const GRID_WIDTH = 11;
-const GRID_HEIGHT = 11;
+import { GRID_SIZE, GRID_WIDTH, GRID_HEIGHT } from "./constans";
 
 (async () => {
   const app = new Application();
@@ -35,7 +32,6 @@ const GRID_HEIGHT = 11;
   const obstacleSprite = new Sprite(textures.obstacle.obstacleTexture);
   let isPaused = true;
   let username;
-
   startButton.addEventListener("click", () => {
     username = document.getElementById("username").value;
 
@@ -46,99 +42,80 @@ const GRID_HEIGHT = 11;
     landingScreen.classList.add("hidden");
     gameScreen.classList.remove("hidden");
 
-    isPaused = false;
-    startGame();
+    setTimeout(() => {
+      isPaused = false;
+      requestAnimationFrame(startGame);
+    }, 300);
   });
 
   const snake = {
     segments: [
       {
-        x: calcCenter(GRID_SIZE, GRID_WIDTH, GRID_HEIGHT).x,
-        y: calcCenter(GRID_SIZE, GRID_WIDTH, GRID_HEIGHT).y,
+        x: calcCenter().x,
+        y: calcCenter().y,
       },
       {
-        x: calcCenter(GRID_SIZE, GRID_WIDTH, GRID_HEIGHT).x - GRID_SIZE,
-        y: calcCenter(GRID_SIZE, GRID_WIDTH, GRID_HEIGHT).y,
+        x: calcCenter().x - GRID_SIZE,
+        y: calcCenter().y,
       },
       {
-        x: calcCenter(GRID_SIZE, GRID_WIDTH, GRID_HEIGHT).x - 2 * GRID_SIZE,
-        y: calcCenter(GRID_SIZE, GRID_WIDTH, GRID_HEIGHT).y,
+        x: calcCenter().x - 2 * GRID_SIZE,
+        y: calcCenter().y,
       },
     ],
     direction: "right",
     nextDirection: "right",
   };
 
-  let apple = getRandomPosition(
-    snake,
-    obstacleSprite,
-    GRID_SIZE,
-    GRID_WIDTH,
-    GRID_HEIGHT
-  );
+  let apple = getRandomPosition(snake, obstacleSprite);
 
   function setApple(newApple) {
     apple = newApple;
   }
 
-  renderApple(appleSprite, apple, GRID_SIZE);
+  renderApple(appleSprite, apple);
 
   app.stage.addChild(snakeContainer);
   app.stage.addChild(appleSprite);
 
-  renderSnake(
-    snakeContainer,
-    snake,
-    textures,
-    GRID_SIZE,
-    getDirection,
-    getCornerSprite
-  );
-  renderApple(appleSprite, apple, GRID_SIZE);
+  renderSnake(snakeContainer, snake, textures);
+  renderApple(appleSprite, apple);
 
   window.addEventListener("keydown", (e) => onKeyDown(e, snake));
 
   function startGame() {
-    if (isPaused) return;
-    function animateSnake() {
-      snake.direction = snake.nextDirection;
+    if (!isPaused) {
+      function animateSnake() {
+        snake.direction = snake.nextDirection;
 
-      moveSnake(
-        snake,
-        GRID_SIZE,
-        GRID_WIDTH,
-        GRID_HEIGHT,
-        username,
-        obstacleSprite,
-        snakeContainer,
-        textures,
-        apple,
-        setApple,
-        appleSprite,
-        app
-      );
+        moveSnake(
+          snake,
+          username,
+          obstacleSprite,
+          snakeContainer,
+          textures,
+          apple,
+          setApple,
+          appleSprite,
+          app
+        );
 
-      gsap.timeline().to(snakeContainer.children, {
-        duration: 0.2,
-        x: (i) => snake.segments[i]?.x,
-        y: (i) => snake.segments[i]?.y,
-        ease: "linear",
-        onComplete: () => {
-          renderSnake(
-            snakeContainer,
-            snake,
-            textures,
-            GRID_SIZE,
-            getDirection,
-            getCornerSprite
-          );
-        },
-      });
+        gsap.timeline().to(snakeContainer.children, {
+          duration: 0.2,
+          x: (i) => snake.segments[i]?.x,
+          y: (i) => snake.segments[i]?.y,
+          ease: "linear",
+          onComplete: () => {
+            renderSnake(snakeContainer, snake, textures);
+          },
+        });
 
-      gsap.delayedCall(0.2, animateSnake);
+        if (!isPaused) {
+          gsap.delayedCall(0.2, animateSnake);
+        }
+      }
+      animateSnake();
     }
-
-    animateSnake();
   }
 
   function pauseGame() {

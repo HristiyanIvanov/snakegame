@@ -1,17 +1,12 @@
-export function calcCenter(GRID_SIZE, GRID_WIDTH, GRID_HEIGHT) {
+import { GRID_SIZE, GRID_WIDTH, GRID_HEIGHT } from "./constans";
+export function calcCenter() {
   return {
     x: Math.floor((GRID_SIZE * GRID_WIDTH) / 2 / GRID_SIZE) * GRID_SIZE,
     y: Math.floor((GRID_SIZE * GRID_HEIGHT) / 2 / GRID_SIZE) * GRID_SIZE,
   };
 }
 
-export function getRandomPosition(
-  snake,
-  obstacleSprite,
-  GRID_SIZE,
-  GRID_WIDTH,
-  GRID_HEIGHT
-) {
+export function getRandomPosition(snake, obstacleSprite) {
   let position;
 
   do {

@@ -78,31 +78,26 @@ import { GRID_SIZE, GRID_WIDTH, GRID_HEIGHT, SNAKE_SPEED } from "./constans";
 
   function startGame() {
     if (!isPaused) {
-      let lastTime = 0;
+      function animateSnake() {
+        snake.direction = snake.nextDirection;
 
-      gsap.ticker.add((time) => {
+        moveSnake(
+          snake,
+          username,
+          obstacleSprite,
+          snakeContainer,
+          textures,
+          apple,
+          setApple,
+          appleSprite,
+          app
+        );
+
         if (!isPaused) {
-          const elapsedTime = time - lastTime;
-
-          if (elapsedTime >= SNAKE_SPEED) {
-            snake.direction = snake.nextDirection;
-
-            moveSnake(
-              snake,
-              username,
-              obstacleSprite,
-              snakeContainer,
-              textures,
-              apple,
-              setApple,
-              appleSprite,
-              app
-            );
-
-            lastTime = time;
-          }
+          gsap.delayedCall(0.2, animateSnake);
         }
-      });
+      }
+      animateSnake();
     }
   }
 

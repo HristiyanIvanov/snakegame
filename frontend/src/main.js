@@ -6,7 +6,7 @@ import { calcCenter, getRandomPosition } from "./utils";
 import { gsap } from "gsap";
 import { onKeyDown } from "./movement";
 import { moveSnake } from "./snake";
-import { GRID_SIZE, GRID_WIDTH, GRID_HEIGHT, SNAKE_SPEED } from "./constans";
+import { GRID_SIZE, GRID_WIDTH, GRID_HEIGHT } from "./constans";
 
 (async () => {
   const app = new Application();
@@ -113,6 +113,31 @@ import { GRID_SIZE, GRID_WIDTH, GRID_HEIGHT, SNAKE_SPEED } from "./constans";
       startGame();
     }
   }
+  function togglePause() {
+    isPaused = !isPaused;
+    if (!isPaused) {
+      startGame();
+    }
+  }
+
+  function isInputFocused() {
+    return document.activeElement.tagName === "INPUT";
+  }
+
+  window.addEventListener("keydown", (e) => {
+    if (e.key === "Enter") {
+      const usernameInput = document.getElementById("username");
+      if (document.activeElement === usernameInput) {
+        startButton.click();
+      }
+    } else if (!isInputFocused()) {
+      if (e.key === "p" || e.key === "P") {
+        togglePause();
+      } else {
+        onKeyDown(e, snake);
+      }
+    }
+  });
 
   pauseButton.addEventListener("click", pauseGame);
   resumeButton.addEventListener("click", resumeGame);

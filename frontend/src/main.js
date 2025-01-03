@@ -32,6 +32,7 @@ import { GRID_SIZE, GRID_WIDTH, GRID_HEIGHT, SNAKE_SPEED } from "./constans";
   const obstacleSprite = new Sprite(textures.obstacle.obstacleTexture);
   let isPaused = true;
   let username;
+
   startButton.addEventListener("click", () => {
     username = document.getElementById("username").value;
 
@@ -48,20 +49,12 @@ import { GRID_SIZE, GRID_WIDTH, GRID_HEIGHT, SNAKE_SPEED } from "./constans";
     }, 300);
   });
 
+  const center = calcCenter();
   const snake = {
     segments: [
-      {
-        x: calcCenter().x,
-        y: calcCenter().y,
-      },
-      {
-        x: calcCenter().x - GRID_SIZE,
-        y: calcCenter().y,
-      },
-      {
-        x: calcCenter().x - 2 * GRID_SIZE,
-        y: calcCenter().y,
-      },
+      { x: center.x, y: center.y },
+      { x: center.x - GRID_SIZE, y: center.y },
+      { x: center.x - 2 * GRID_SIZE, y: center.y },
     ],
     direction: "right",
     nextDirection: "right",
@@ -85,36 +78,31 @@ import { GRID_SIZE, GRID_WIDTH, GRID_HEIGHT, SNAKE_SPEED } from "./constans";
 
   function startGame() {
     if (!isPaused) {
-      function animateSnake() {
-        snake.direction = snake.nextDirection;
+      let lastTime = 0;
 
-        moveSnake(
-          snake,
-          username,
-          obstacleSprite,
-          snakeContainer,
-          textures,
-          apple,
-          setApple,
-          appleSprite,
-          app
-        );
-
-        gsap.timeline().to(snakeContainer.children, {
-          duration: SNAKE_SPEED,
-          x: (i) => snake.segments[i]?.x,
-          y: (i) => snake.segments[i]?.y,
-          ease: "linear",
-          onComplete: () => {
-            renderSnake(snakeContainer, snake, textures);
-          },
-        });
-
+      gsap.ticker.add((time) => {
         if (!isPaused) {
-          gsap.delayedCall(SNAKE_SPEED, animateSnake);
+          const elapsedTime = time - lastTime;
+
+          if (elapsedTime >= SNAKE_SPEED) {
+            snake.direction = snake.nextDirection;
+
+            moveSnake(
+              snake,
+              username,
+              obstacleSprite,
+              snakeContainer,
+              textures,
+              apple,
+              setApple,
+              appleSprite,
+              app
+            );
+
+            lastTime = time;
+          }
         }
-      }
-      animateSnake();
+      });
     }
   }
 

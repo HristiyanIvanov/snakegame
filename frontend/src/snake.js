@@ -82,24 +82,23 @@ export function moveSnake(
     snake.segments.pop();
   }
 
-  gsap.to(snakeContainer.children, {
-    duration: 1,
-    x: (i) => snake.segments[i].x,
-    y: (i) => snake.segments[i].y,
-    ease: "linear",
-    onUpdate: () => {
-      snakeContainer.children.forEach((child, index) => {
-        const currentX = gsap.getProperty(child, "x");
-        const currentY = gsap.getProperty(child, "y");
+  // gsap.to(snakeContainer.children, {
+  //   duration: SNAKE_SPEED,
+  //   x: (i) => snake.segments[i].x,
+  //   y: (i) => snake.segments[i].y,
+  //   ease: "none",
+  //   onUpdate: () => {
+  //     snakeContainer.children.forEach((child) => {
+  //       child.x = gsap.getProperty(child, "x");
+  //       child.y = gsap.getProperty(child, "y");
+  //     });
+  //   },
+  //   onComplete: () => {
+  //     renderSnake(snakeContainer, snake, textures);
+  //   },
+  // });
 
-        child.x = currentX;
-        child.y = currentY;
-      });
-    },
-    onComplete: () => {
-      renderSnake(snakeContainer, snake, textures);
-    },
-  });
+  renderSnake(snakeContainer, snake, textures);
 }
 
 async function transitionToLevelTwo(obstacleSprite, app) {

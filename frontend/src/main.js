@@ -28,11 +28,12 @@ import { GRID_SIZE, GRID_WIDTH, GRID_HEIGHT } from "./constans";
   const resumeButton = document.getElementById("resume-button");
   const textures = await loadTextures();
   const snakeContainer = new Container();
+  const snakeBodyContainer = new Container();
+
   const appleSprite = new Sprite(textures.food.apple);
   const obstacleSprite = new Sprite(textures.obstacle.obstacleTexture);
   let isPaused = true;
   let username;
-
   startButton.addEventListener("click", () => {
     username = document.getElementById("username").value;
 
@@ -45,7 +46,7 @@ import { GRID_SIZE, GRID_WIDTH, GRID_HEIGHT } from "./constans";
 
     setTimeout(() => {
       isPaused = false;
-      requestAnimationFrame(startGame);
+      startGame();
     }, 300);
   });
 
@@ -69,9 +70,10 @@ import { GRID_SIZE, GRID_WIDTH, GRID_HEIGHT } from "./constans";
   renderApple(appleSprite, apple);
 
   app.stage.addChild(snakeContainer);
-  app.stage.addChild(appleSprite);
+  snakeContainer.addChild(appleSprite);
+  snakeContainer.addChild(snakeBodyContainer);
 
-  renderSnake(snakeContainer, snake, textures);
+  renderSnake(snakeBodyContainer, snake, textures);
   renderApple(appleSprite, apple);
 
   window.addEventListener("keydown", (e) => onKeyDown(e, snake));
@@ -85,12 +87,12 @@ import { GRID_SIZE, GRID_WIDTH, GRID_HEIGHT } from "./constans";
           snake,
           username,
           obstacleSprite,
-          snakeContainer,
+          snakeBodyContainer,
           textures,
           apple,
           setApple,
           appleSprite,
-          app
+          snakeContainer
         );
 
         if (!isPaused) {

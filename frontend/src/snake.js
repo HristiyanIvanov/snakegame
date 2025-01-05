@@ -4,6 +4,7 @@ import { getRandomPosition } from "./utils";
 import { renderApple, renderSnake } from "./render";
 import { displayGameOverMessage } from "./displayMessage";
 import { GRID_SIZE, GRID_WIDTH, GRID_HEIGHT, SNAKE_SPEED } from "./constans";
+import { getDirection } from "./movement";
 let appleCount = 0;
 let isLevelTwo = false;
 let gameOver = false;
@@ -12,12 +13,12 @@ export function moveSnake(
   snake,
   username,
   obstacleSprite,
-  snakeContainer,
+  snakeBodyContainer,
   textures,
   apple,
   setApple,
   appleSprite,
-  app
+  snakeContainer
 ) {
   const head = { ...snake.segments[0] };
 
@@ -34,7 +35,7 @@ export function moveSnake(
     head.y < 0 ||
     head.y >= GRID_SIZE * GRID_HEIGHT
   ) {
-    displayGameOverMessage("Game Over! Snake hit the wall.", app);
+    displayGameOverMessage("Game Over! Snake hit the wall.");
     if (!gameOver) {
       saveToLeaderboard(username, appleCount);
       gameOver = true;
@@ -47,7 +48,7 @@ export function moveSnake(
       (segment) => segment.x === head.x && segment.y === head.y
     )
   ) {
-    displayGameOverMessage("Game Over! Snake collided with itself.", app);
+    displayGameOverMessage("Game Over! Snake collided with itself.");
     if (!gameOver) {
       saveToLeaderboard(username, appleCount);
       gameOver = true;
@@ -56,7 +57,7 @@ export function moveSnake(
   }
 
   if (isLevelTwo && head.x === GRID_SIZE * 5 && head.y === GRID_SIZE * 5) {
-    displayGameOverMessage("Game Over! Snake hit the obstacle.", app);
+    displayGameOverMessage("Game Over! Snake hit the obstacle.");
     if (!gameOver) {
       saveToLeaderboard(username, appleCount);
       gameOver = true;
@@ -76,30 +77,41 @@ export function moveSnake(
     document.getElementById("score").textContent = "Score: " + appleCount;
 
     if (appleCount === 25 && !isLevelTwo) {
-      transitionToLevelTwo(obstacleSprite, app);
+      transitionToLevelTwo(obstacleSprite, snakeContainer);
     }
   } else {
     snake.segments.pop();
   }
 
-  snakeContainer.children.forEach((child, i) => {
-    gsap.to(child, {
-      duration: SNAKE_SPEED,
-      x: snake.segments[i].x,
-      y: snake.segments[i].y,
-      ease: "none",
-      onUpdate: () => {
-        child.x = gsap.getProperty(child, "x");
-        child.y = gsap.getProperty(child, "y");
-      },
-      onComplete: () => {
-        renderSnake(snakeContainer, snake, textures);
-      },
-    });
+  snakeBodyContainer.children.forEach((child, i) => {
+    const currentSegment = snake.segments[i];
+    const nextSegment = snake.segments[i + 1];
+    const previousSegment = snake.segments[i - 1];
+    if (currentSegment.isBeforeCorner) {
+      child.x = nextSegment?.x;
+      child.y = nextSegment?.y;
+    } else if (currentSegment.isCorner) {
+      child.x = nextSegment?.x;
+      child.y = nextSegment?.y;
+      //Trqbva da proverim za sled ugula, proverkata dolu e greshna
+      // } else if (i + 1 === snake.segments.length - 1) {
+      //   child.x = prev.x;
+      //   child.y = prev.y;
+    } else {
+      gsap.to(child, {
+        duration: SNAKE_SPEED,
+        x: currentSegment.x,
+        y: currentSegment.y,
+        ease: "none",
+        onComplete: () => {
+          renderSnake(snakeBodyContainer, snake, textures);
+        },
+      });
+    }
   });
 }
 
-async function transitionToLevelTwo(obstacleSprite, app) {
+async function transitionToLevelTwo(obstacleSprite, snakeContainer) {
   isLevelTwo = true;
 
   obstacleSprite.visible = true;
@@ -108,14 +120,14 @@ async function transitionToLevelTwo(obstacleSprite, app) {
   obstacleSprite.x = GRID_SIZE * 5;
   obstacleSprite.y = GRID_SIZE * 5;
 
-  if (!app.stage.children.includes(obstacleSprite)) {
-    app.stage.addChild(obstacleSprite);
+  if (!snakeContainer.children.includes(obstacleSprite)) {
+    snakeContainer.addChild(obstacleSprite);
   }
 
   gsap.to(obstacleSprite, {
     width: GRID_SIZE,
     height: GRID_SIZE,
     duration: 0.5,
-    ease: "power1.inOut",
+    ease: "power2.out",
   });
 }

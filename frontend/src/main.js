@@ -70,10 +70,11 @@ import { GRID_SIZE, GRID_WIDTH, GRID_HEIGHT } from "./constans";
   renderApple(appleSprite, apple);
 
   app.stage.addChild(snakeContainer);
-  snakeContainer.addChild(appleSprite);
-  snakeContainer.addChild(snakeBodyContainer);
+  app.stage.addChild(appleSprite);
+  app.stage.addChild(snakeBodyContainer);
 
-  renderSnake(snakeBodyContainer, snake, textures);
+  renderSnake(snakeContainer, snake, textures, false);
+  renderSnake(snakeBodyContainer, snake, textures, true);
   renderApple(appleSprite, apple);
 
   window.addEventListener("keydown", (e) => onKeyDown(e, snake));
@@ -92,7 +93,8 @@ import { GRID_SIZE, GRID_WIDTH, GRID_HEIGHT } from "./constans";
           apple,
           setApple,
           appleSprite,
-          snakeContainer
+          snakeContainer,
+          app
         );
 
         if (!isPaused) {

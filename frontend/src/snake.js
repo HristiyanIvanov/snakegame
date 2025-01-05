@@ -4,7 +4,7 @@ import { getRandomPosition } from "./utils";
 import { renderApple, renderSnake } from "./render";
 import { displayGameOverMessage } from "./displayMessage";
 import { GRID_SIZE, GRID_WIDTH, GRID_HEIGHT, SNAKE_SPEED } from "./constans";
-import { getDirection } from "./movement";
+
 let appleCount = 0;
 let isLevelTwo = false;
 let gameOver = false;
@@ -18,7 +18,8 @@ export function moveSnake(
   apple,
   setApple,
   appleSprite,
-  snakeContainer
+  snakeContainer,
+  app
 ) {
   const head = { ...snake.segments[0] };
 
@@ -77,32 +78,19 @@ export function moveSnake(
     document.getElementById("score").textContent = "Score: " + appleCount;
 
     if (appleCount === 25 && !isLevelTwo) {
-      transitionToLevelTwo(obstacleSprite, snakeContainer);
+      transitionToLevelTwo(obstacleSprite, app);
     }
   } else {
     snake.segments.pop();
   }
 
-  snakeBodyContainer.children.forEach((child, i) => {
+  snakeContainer.children.forEach((child, i) => {
     const currentSegment = snake.segments[i];
     const nextSegment = snake.segments[i + 1];
-    const previousSegment = snake.segments[i - 1];
     if (i > 0) {
-      if (
-        currentSegment?.isBeforeCorner ||
-        currentSegment?.isCorner ||
-        currentSegment?.index + 1 === snake.segments.length - 2
-      ) {
+      if (currentSegment?.isBeforeCorner) {
         child.x = nextSegment?.x;
         child.y = nextSegment?.y;
-      } else if (child.isDuplicate) {
-        gsap.to(child, {
-          duration: 0.1,
-          x: previousSegment.x,
-          y: previousSegment.y,
-          alpha: 0,
-          ease: "none",
-        });
       }
     } else {
       gsap.to(child, {
@@ -111,14 +99,15 @@ export function moveSnake(
         y: currentSegment.y,
         ease: "none",
         onComplete: () => {
-          renderSnake(snakeBodyContainer, snake, textures);
+          renderSnake(snakeContainer, snake, textures, false);
         },
       });
     }
   });
+  renderSnake(snakeBodyContainer, snake, textures, true);
 }
 
-async function transitionToLevelTwo(obstacleSprite, snakeContainer) {
+async function transitionToLevelTwo(obstacleSprite, app) {
   isLevelTwo = true;
 
   obstacleSprite.visible = true;
@@ -127,8 +116,8 @@ async function transitionToLevelTwo(obstacleSprite, snakeContainer) {
   obstacleSprite.x = GRID_SIZE * 5;
   obstacleSprite.y = GRID_SIZE * 5;
 
-  if (!snakeContainer.children.includes(obstacleSprite)) {
-    snakeContainer.addChild(obstacleSprite);
+  if (!app.stage.children.includes(obstacleSprite)) {
+    app.stage.addChild(obstacleSprite);
   }
 
   gsap.to(obstacleSprite, {

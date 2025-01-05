@@ -89,12 +89,20 @@ export function moveSnake(
     const previousSegment = snake.segments[i - 1];
     if (i > 0) {
       if (
-        currentSegment.isBeforeCorner ||
-        currentSegment.isCorner ||
-        currentSegment.index + 1 === snake.segments.length - 2
+        currentSegment?.isBeforeCorner ||
+        currentSegment?.isCorner ||
+        currentSegment?.index + 1 === snake.segments.length - 2
       ) {
         child.x = nextSegment?.x;
         child.y = nextSegment?.y;
+      } else if (child.isDuplicate) {
+        gsap.to(child, {
+          duration: 0.1,
+          x: previousSegment.x,
+          y: previousSegment.y,
+          alpha: 0,
+          ease: "none",
+        });
       }
     } else {
       gsap.to(child, {

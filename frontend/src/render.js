@@ -6,6 +6,10 @@ import { GRID_SIZE } from "./constans";
 export function renderSnake(container, snake, textures) {
   container.removeChildren();
 
+  const duplicateSegment = new Sprite(textures.head[snake.direction]);
+  duplicateSegment.width = GRID_SIZE;
+  duplicateSegment.height = GRID_SIZE;
+
   snake.segments.forEach((segment, index) => {
     let sprite;
     segment.isCorner = false;
@@ -14,6 +18,8 @@ export function renderSnake(container, snake, textures) {
 
     if (index === 0) {
       sprite = new Sprite(textures.head[snake.direction]);
+      duplicateSegment.x = segment.x;
+      duplicateSegment.y = segment.y;
     } else if (index === snake.segments.length - 1) {
       const tailDir = getDirection(
         snake.segments[index - 1],
@@ -52,6 +58,8 @@ export function renderSnake(container, snake, textures) {
 
     container.addChild(sprite);
   });
+
+  container.addChild(duplicateSegment);
 }
 
 export function renderApple(appleSprite, apple) {

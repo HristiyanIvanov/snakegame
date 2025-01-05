@@ -10,7 +10,7 @@ export function renderSnake(container, snake, textures) {
     let sprite;
     segment.isCorner = false;
     segment.isBeforeCorner = false;
-    segment.isAfterCorner = false;
+    segment.index = index;
 
     if (index === 0) {
       sprite = new Sprite(textures.head[snake.direction]);
@@ -34,10 +34,6 @@ export function renderSnake(container, snake, textures) {
         segment.isCorner = true;
         if (index > 1) {
           snake.segments[index - 1].isBeforeCorner = true;
-        }
-        // Ne raboti s for-a v snake.js, zatova proverqvame tam s if
-        else if (index + 1 < snake.segments.length - 1) {
-          snake.segments[index + 1].isAfterCorner = true;
         }
         sprite = getCornerSprite(prevDir, nextDir, textures);
       } else {

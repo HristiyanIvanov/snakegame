@@ -87,16 +87,15 @@ export function moveSnake(
     const currentSegment = snake.segments[i];
     const nextSegment = snake.segments[i + 1];
     const previousSegment = snake.segments[i - 1];
-    if (currentSegment.isBeforeCorner) {
-      child.x = nextSegment?.x;
-      child.y = nextSegment?.y;
-    } else if (currentSegment.isCorner) {
-      child.x = nextSegment?.x;
-      child.y = nextSegment?.y;
-      //Trqbva da proverim za sled ugula, proverkata dolu e greshna
-      // } else if (i + 1 === snake.segments.length - 1) {
-      //   child.x = prev.x;
-      //   child.y = prev.y;
+    if (i > 0) {
+      if (
+        currentSegment.isBeforeCorner ||
+        currentSegment.isCorner ||
+        currentSegment.index + 1 === snake.segments.length - 2
+      ) {
+        child.x = nextSegment?.x;
+        child.y = nextSegment?.y;
+      }
     } else {
       gsap.to(child, {
         duration: SNAKE_SPEED,
